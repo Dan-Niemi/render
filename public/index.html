@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Clicker Game</title>
-	 <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiplayer Clicker Game</title>
+  <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
@@ -17,30 +17,33 @@
       margin-top: 20px;
     }
   </style>
-</head>
-<body>
-	 <h1>Multiplayer Clicker Game</h1>
-  <button id="clickButton">Click Me!</button>
-  <div id="scores"></div>
-
+  <!-- Include Alpine.js -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
   <script src="/socket.io/socket.io.js"></script>
+</head>
+<body x-data="clickerGame()">
+  <h1>Multiplayer Clicker Game</h1>
+  <button id="clickButton" @click="socket.emit('click')">Click Me!</button>
+  <div id="scores">
+    <template x-for="(count, id) in clickCounts" :key="id">
+      <p x-text="`Player ${id}: ${count} clicks`"></p>
+    </template>
+  </div>
+
   <script>
-    const socket = io();
-    const clickButton = document.getElementById('clickButton');
-    const scoresDiv = document.getElementById('scores');
+    function clickerGame() {
+      return {
+        socket: null,
+        clickCounts: {},
 
-    clickButton.addEventListener('click', () => {
-      socket.emit('click');
-    });
-
-    socket.on('updateScores', (clickCounts) => {
-      scoresDiv.innerHTML = '';
-      for (let id in clickCounts) {
-        const score = document.createElement('p');
-        score.textContent = `Player ${id}: ${clickCounts[id]} clicks`;
-        scoresDiv.appendChild(score);
+        init() {
+          this.socket = io();
+          this.socket.on('updateScores', (clickCounts) => {
+            this.clickCounts = clickCounts;
+          });
+        },
       }
-    });
+    }
   </script>
 </body>
 </html>
