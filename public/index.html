@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Clicker Game</title>
+	 <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #clickButton {
+      padding: 20px;
+      font-size: 24px;
+    }
+    #scores {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+	 <h1>Multiplayer Clicker Game</h1>
+  <button id="clickButton">Click Me!</button>
+  <div id="scores"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const clickButton = document.getElementById('clickButton');
+    const scoresDiv = document.getElementById('scores');
+
+    clickButton.addEventListener('click', () => {
+      socket.emit('click');
+    });
+
+    socket.on('updateScores', (clickCounts) => {
+      scoresDiv.innerHTML = '';
+      for (let id in clickCounts) {
+        const score = document.createElement('p');
+        score.textContent = `Player ${id}: ${clickCounts[id]} clicks`;
+        scoresDiv.appendChild(score);
+      }
+    });
+  </script>
+</body>
+</html>
