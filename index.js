@@ -48,6 +48,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     delete clickCounts[socket.id];
     io.emit('updateScores', clickCounts);
+		io.emit('gameEnded', finishOrder);
   });
 });
 
