@@ -1,10 +1,15 @@
+
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+window.canvas = canvas;
+window.ctx = ctx;
+
+import Player from './hippos-Player.js'
+window.data = data;
+
 function data() {
 	return {
 		players: [
-			{ name: 'Alan', score: 0, color: 'blue' },
-			{ name: 'Bob', score: 0, color: 'blue' },
-			{ name: 'Carson', score: 0, color: 'blue' },
-			{ name: 'Dan', score: 0, color: 'blue' },
 		],
 		get numPlayers() {
 			return this.players.length
@@ -20,6 +25,10 @@ function data() {
 		},
 
 		init() {
+			this.players.push(new Player('Alan'))
+			this.players.push(new Player('Bob'))
+			this.players.push(new Player('Carson'))
+			this.players.push(new Player('Dan'))
 			this.arrangePlayers();
 			window.addEventListener('resize', this.arrangePlayers.bind(this));
 		},
@@ -31,19 +40,21 @@ function data() {
 			})
 		},
 		addPlayer(name) {
-			this.players.push({ name: name, score: 0, color: getRandomHSL() });
+			this.players.push(new Player(name));
 			this.arrangePlayers()
+		},
+		draw(){
+
 		}
 	}
 }
 
-function getRandomHSL() {
-	const h = Math.floor(Math.random() * 360); // Random hue between 0 and 360
-	return `hsl(${h}, 100%, 50%)`;
-}
+// function getRandomHSL() {
+// 	const h = Math.floor(Math.random() * 360); // Random hue between 0 and 360
+// 	return `hsl(${h}, 100%, 50%)`;
+// }
 
-const canvas = document.getElementById('myCanvas');
-const ctx = canvas.getContext('2d');
+
 
 // Set canvas size to full window
 canvas.width = window.innerWidth;
