@@ -1,0 +1,10 @@
+ 
+ canvas { display: block; } 
+ .player {
+ 	position: absolute;
+ 	width: 20px;
+ 	height: 20px;
+ 	background-color: red;
+ 	border-radius: 50%;
+	transition: all 300ms;
+ }

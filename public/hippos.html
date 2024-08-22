@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cubic Easing Animation</title>
+	<link rel="stylesheet" href="hippos.css">
+	<script defer src="hippos.js"></script>
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body x-data="data()">
+	<canvas id="myCanvas"></canvas>
+	<section>
+		<template x-for="player in players">
+			<div x-text="player.name" class="player" :style="`left:${player.posX}px;top:${player.posY}px;background:${player.color}`"></div>
+		</template>
+	</section>
+	<section x-data="{name:''}">
+		<input type="text" x-model="name">
+		<button @click="name && addPlayer(name);name=''">Add Player</button>
+	</section>
+</body>
+
+</html>
