@@ -28,3 +28,8 @@ body{font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robo
 	left: 0;
 	padding: 2rem;
 }
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+}

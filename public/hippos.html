@@ -11,15 +11,17 @@
 </head>
 
 <body x-data="data()">
-	<canvas @mousedown="players[0].animateLine($event.clientX,$event.clientY)" id="myCanvas"></canvas>
+	<canvas id="playerCanvas"></canvas>
+	<canvas @mousedown="onClick" id="ballCanvas"></canvas>
 	<section>
 		<template x-for="player in players">
 			<div x-text="player.name" class="player" :style="`left:${player.posX}px;top:${player.posY}px;background:${player.color}`"></div>
 		</template>
 	</section>
 	<section class="add-player" x-data="{name:''}">
-		<input type="text" x-model="name">
+		<input type="text" x-model="name" maxlength="6">
 		<button @click="name && addPlayer(name);name=''">Add Player</button>
+		<button @click="createBall()">Create Ball</button>
 	</section>
 </body>
 
