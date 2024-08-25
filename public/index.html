@@ -23,19 +23,18 @@
   <div x-show="hasName">
     <h2>Welcome, <span x-text="playerName"></span>!</h2>
 
-    <button id="startGameButton" @click="startGame" x-show="state != 1">Start Game</button>
-    <button id="clickButton" @click="sendClick" x-show="state == 1">Click Me!</button>
+    <button id="startGameButton" @click="socket.emit('startGame')" x-show="state != 1">Start Game</button>
+    <button id="clickButton" @click="socket.emit('click')" x-show="state == 1" :disabled="finished">Click Me!</button>
 
     <div id="scores">
       <template x-for="(player, id) in playerList" :key="id">
-        <p x-text="`${player.name}: ${player.count} clicks` + (player.finished ? ' (Finished)' : '')"></p>
+        <p x-text="`${player.name}: ${player.count}`"></p>
       </template>
     </div>
 
-    <div x-show="state == 2">
+    <div x-show="finishOrder.length > 0">
       <h3>Finish Order:</h3>
-
-      <ul x-show="finishOrder.length > 0">
+      <ul>
         <template x-for="(player,index) in finishOrder" :key="index">
           <li>
             <span x-text="index+1"></span>

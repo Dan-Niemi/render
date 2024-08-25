@@ -6,14 +6,15 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-let playerList = [{}];
+let playerList = {};
 let state = 0; //0,1,2 for pre, during, and post game
 let finishOrder = [];
 const CLICK_GOAL = 5;
 
 io.on("connection", (socket) => {
+  socket.emit("idCreated", socket.id);
+  socket.emit("setState", state);
   
-  io.emit('newConnection',socket.id)
   socket.on("newPlayer", (name) => {
     playerList[socket.id] = { name: name, count: 0, finished: false };
     io.emit("updateScores", playerList);
@@ -22,9 +23,12 @@ io.on("connection", (socket) => {
   socket.on("startGame", () => {
     if (state != 1) {
       state = 1;
-      Object.values(playerList).forEach((player) => (player.score = 0));
+      Object.values(playerList).forEach((obj) => {
+        obj.count = 0;
+        obj.finished = false;
+      });
       finishOrder = [];
-      io.emit("gameStarted");
+      io.emit("gameStarted",playerList,finishOrder);
     }
   });
 
@@ -35,13 +39,12 @@ io.on("connection", (socket) => {
       if (playerList[socket.id].count >= CLICK_GOAL) {
         playerList[socket.id].finished = true;
         finishOrder.push(playerList[socket.id].name);
+        io.emit("playerFinished", finishOrder);
       }
-
       io.emit("updateScores", playerList);
-
-      if (finishOrder.length === Object.keys(playerList).length) {
-        state = 2
-        io.emit("gameEnded", finishOrder);
+      if (Object.values(playerList).every((obj) => obj.count >= CLICK_GOAL)) {
+        state = 2;
+        io.emit("gameEnded");
       }
     }
   });

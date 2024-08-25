@@ -7,44 +7,29 @@ function clickerGame() {
     playerList: {},
     state: 0, //0,1,2 for pre, during, and post game
     finishOrder: [],
-    hasFinished: false,
 
     init() {
       this.socket = io();
-      this.socket.on("updateScores", (playerList) => {
-        this.playerList = playerList;
-        if (playerList[this.socket.id]?.finished) {
-          this.hasFinished = true;
-        }
-      });
-      this.socket.on("gameStarted", () => {
-        this.state = 1;
-        this.hasFinished = false;
-      });
-      this.socket.on("gameEnded", (finishOrder) => {
-        this.state = 2;
-        this.finishOrder = finishOrder;
-      });
-      this.socket.on("newConnection", (id) => {
-        this.id = id;
-      });
+      this.socket.on("idCreated", (id) => (this.id = id));
+      this.socket.on("setState", (state) => (this.state = state));
+      this.socket.on("updateScores", (playerList) => (this.playerList = playerList));
+      this.socket.on("gameStarted", (playerList,finishOrder) => {
+				this.state = 1;
+				this.playerList = playerList;
+				this.finishOrder = finishOrder
+			});
+      this.socket.on("gameEnded", () => (this.state = 2));
+      this.socket.on("playerFinished", (finishOrder) => (this.finishOrder = finishOrder));
     },
-
+    get finished() {
+      return this.playerList[this.id]?.finished;
+    },
     submitName() {
       if (this.playerName.trim() !== "") {
         this.hasName = true;
         this.socket.emit("newPlayer", this.playerName);
       }
     },
-
-    startGame() {
-      this.socket.emit("startGame");
-    },
-
-    sendClick() {
-      if (this.state == 1) {
-        this.socket.emit("click");
-      }
-    },
+  
   };
 }
