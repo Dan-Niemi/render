@@ -1,3 +1,27 @@
-body {font-family: Arial, sans-serif;text-align: center; } 
-#clickButton {padding: 20px;font-size: 24px; } 
-#scores {margin-top: 80px; } 
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+#clickButton {
+  padding: 20px;
+  font-size: 24px;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#clickButton:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+#startGameButton {
+  padding: 15px 30px;
+  font-size: 20px;
+  background-color: blue;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}

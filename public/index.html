@@ -1,41 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Multiplayer Clicker Game</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-    }
-    #clickButton {
-      padding: 20px;
-      font-size: 24px;
-      background-color: green;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #clickButton:disabled {
-      background-color: gray;
-      cursor: not-allowed;
-    }
-    #startGameButton {
-      padding: 15px 30px;
-      font-size: 20px;
-      background-color: blue;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+
   <script src="/socket.io/socket.io.js"></script>
+  <script defer src="index.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="index.css">
 </head>
+
 <body x-data="clickerGame()">
   <h1>Multiplayer Clicker Game</h1>
 
@@ -47,83 +23,29 @@
   <div x-show="hasName">
     <h2>Welcome, <span x-text="playerName"></span>!</h2>
 
-    <button id="startGameButton" @click="startGame" x-show="!gameStarted && !gameEnded">Start Game</button>
-
-    <button id="clickButton" @click="sendClick" :disabled="!gameStarted || gameEnded || hasFinished">Click Me!</button>
+    <button id="startGameButton" @click="startGame" x-show="state != 1">Start Game</button>
+    <button id="clickButton" @click="sendClick" x-show="state == 1">Click Me!</button>
 
     <div id="scores">
-      <template x-for="(player, id) in clickCounts" :key="id">
+      <template x-for="(player, id) in playerList" :key="id">
         <p x-text="`${player.name}: ${player.count} clicks` + (player.finished ? ' (Finished)' : '')"></p>
       </template>
     </div>
 
-    <div x-show="gameEnded">
+    <div x-show="state == 2">
       <h3>Finish Order:</h3>
-      <template x-if="winners.length > 0">
-        <ol>
-          <template x-for="winner in winners" :key="winner">
-            <li x-text="winner"></li>
-          </template>
-        </ol>
-      </template>
-      <template x-if="winners.length === 0">
-        <p>No players finished yet.</p>
-      </template>
+
+      <ul x-show="finishOrder.length > 0">
+        <template x-for="(player,index) in finishOrder" :key="index">
+          <li>
+            <span x-text="index+1"></span>
+            <span x-text="player"></span>
+          </li>
+        </template>
+      </ul>
     </div>
   </div>
 
-  <script>
-    function clickerGame() {
-      return {
-        socket: null,
-        playerName: '',
-        hasName: false,
-        clickCounts: {},
-        gameStarted: false,
-        gameEnded: false,
-        winners: [],
-        hasFinished: false,
-
-        init() {
-					console.log(this.clickCounts);
-          this.socket = io();
-          this.socket.on('updateScores', (clickCounts) => {
-            this.clickCounts = clickCounts;
-            if (clickCounts[this.socket.id]?.finished) {
-              this.hasFinished = true;
-            }
-						
-          });
-          this.socket.on('gameStarted', () => {
-            this.gameStarted = true;
-            this.gameEnded = false;
-            this.hasFinished = false;
-          });
-          this.socket.on('gameEnded', (winners) => {
-            this.gameStarted = false;
-            this.gameEnded = true;
-            this.winners = winners;
-          });
-        },
-
-        submitName() {
-          if (this.playerName.trim() !== '') {
-            this.hasName = true;
-            this.socket.emit('newPlayer', this.playerName);
-          }
-        },
-
-        startGame() {
-          this.socket.emit('startGame');
-        },
-
-        sendClick() {
-          if (this.gameStarted && !this.gameEnded && !this.hasFinished) {
-            this.socket.emit('click');
-          }
-        }
-      }
-    }
-  </script>
 </body>
+
 </html>
