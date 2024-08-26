@@ -1,27 +1,62 @@
+/* RESET */
+*, *::before, *::after { box-sizing: border-box; } 
+* { margin: 0; } 
+body { line-height: 1.5; -webkit-font-smoothing: antialiased; } 
+img, picture, video, canvas, svg { display: block; max-width: 100%; } 
+input, button, textarea, select { font: inherit; } 
+p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; } 
+
+.pirate { font-family: "Pirata One", system-ui; font-weight: 400; font-style: normal; } 
+.itim { font-family: "Itim", cursive; font-weight: 400; font-style: normal; } 
+.plex { font-family: "IBM Plex Mono"; } 
+
+html { font-family: 'Pirata One', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif } 
+
 body {
-  font-family: Arial, sans-serif;
-  text-align: center;
+	width: 100vw;
+	height: 100vh;
+	font-size: 2rem;
+	background-size: cover;
+	/* border: 2rem dashed black; */
+	cursor: url('/img/cursor.png'), auto;
 }
-#clickButton {
-  padding: 20px;
-  font-size: 24px;
-  background-color: green;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+
+#clickButton { padding: 20px; font-size: 24px; background-color: green; color: white; border: none; border-radius: 5px; cursor: pointer; } 
+
+#clickButton:disabled { background-color: gray; cursor: not-allowed; } 
+
+#startGameButton { padding: 15px 30px; font-size: 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; } 
+
+.name-entry { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 3rem; } 
+.name-entry label { display: flex; align-items: center; flex-direction: column; font-size: 8rem; } 
+.name-entry input {padding: 1rem;font-size: 5rem;background-color: transparent;outline: none;text-align: center;border:none;border-bottom: 1rem solid hsla(0, 0%, 0%, .1); } 
+label,input,button { cursor: url('/img/cursor.png'), auto; } 
+
+.name-entry button {border: none;border-radius: 0;padding-inline: 4rem;font-size: 6rem;color: hsla(0, 0%, 0%, .1);border: 1rem solid hsla(0, 0%, 0%, .1); } 
+.name-entry button.ready {color: black;border: 16px solid black; } 
+
+
+.name-entry button.ready:hover {color: white;background-color: black; } 
+
+.present {
+	position: absolute;
+	
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100px;
+	padding: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	gap: 1rem;
 }
-#clickButton:disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
-#startGameButton {
-  padding: 15px 30px;
-  font-size: 20px;
-  background-color: blue;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 20px;
+.present span {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-inline: 1rem;
+	background-color: hsla(0, 0%, 0%, .1);
+
 }

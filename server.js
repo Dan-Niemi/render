@@ -12,9 +12,14 @@ let finishOrder = [];
 const CLICK_GOAL = 5;
 
 io.on("connection", (socket) => {
-  socket.emit("idCreated", socket.id);
-  socket.emit("setState", state);
+  socket.emit("newConnection", socket.id,playerList);
   
+  if(!Object.keys(playerList).length){
+    console.log('set state')
+    state = 0
+  }
+  socket.emit("setState", state);
+
   socket.on("newPlayer", (name) => {
     playerList[socket.id] = { name: name, count: 0, finished: false };
     io.emit("updateScores", playerList);
@@ -28,7 +33,7 @@ io.on("connection", (socket) => {
         obj.finished = false;
       });
       finishOrder = [];
-      io.emit("gameStarted",playerList,finishOrder);
+      io.emit("gameStarted", playerList, finishOrder);
     }
   });
 
@@ -42,17 +47,22 @@ io.on("connection", (socket) => {
         io.emit("playerFinished", finishOrder);
       }
       io.emit("updateScores", playerList);
-      if (Object.values(playerList).every((obj) => obj.count >= CLICK_GOAL)) {
-        state = 2;
-        io.emit("gameEnded");
-      }
+      checkEnd();
     }
   });
 
   socket.on("disconnect", () => {
     delete playerList[socket.id];
     io.emit("updateScores", playerList);
+    checkEnd();
   });
+
+  function checkEnd() {
+    if (Object.values(playerList).every((obj) => obj.count >= CLICK_GOAL)) {
+      state = 2;
+      io.emit("gameEnded");
+    }
+  }
 });
 
 app.use(express.static("public"));

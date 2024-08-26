@@ -10,21 +10,24 @@
   <script defer src="index.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+
 </head>
 
 <body x-data="clickerGame()">
-  <h1>Multiplayer Clicker Game</h1>
 
-  <div x-show="!hasName">
-    <input type="text" placeholder="Enter your name" x-model="playerName">
-    <button @click="submitName">Join</button>
-  </div>
+  <section class="name-entry" x-show="!hasName">
+    <label>Who are you?<input type="text" autofocus @keydown.enter="submitName" x-model="playerName"></label>
+    <button :class="playerName && 'ready'" @click="submitName">Join</button>
+  </section>
 
-  <div x-show="hasName">
+  <section class="game" x-show="hasName">
     <h2>Welcome, <span x-text="playerName"></span>!</h2>
 
     <button id="startGameButton" @click="socket.emit('startGame')" x-show="state == 0">Start Game</button>
-    <button id="clickButton" @click="socket.emit('click')" x-show="state != 0" :disabled="finished">Click Me!</button>
+    <button id="clickButton" @click="socket.emit('click')" x-show="state != 0" :disabled="state !=1 || finished">Click Me!</button>
 
     <div id="scores">
       <template x-for="(player, id) in playerList" :key="id">
@@ -44,7 +47,16 @@
       </ul>
     </div>
     <button id="startGameButton" @click="socket.emit('startGame')" x-show="state == 2">Start New Round</button>
-  </div>
+  </section>
+  <section class="present">
+    <p x-text ="`${numPlayers} Player${numPlayers == 1 ? '' : 's'}`"></p>
+    <template x-for="player in Object.values(playerList)">
+      <span x-text="player.name"></span>
+      
+
+    </template>
+  </section>
+
 
 </body>
 

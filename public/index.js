@@ -10,19 +10,25 @@ function clickerGame() {
 
     init() {
       this.socket = io();
-      this.socket.on("idCreated", (id) => (this.id = id));
+      this.socket.on("newConnection", (id, playerList) => {
+        this.id = id;
+        this.playerList = playerList;
+      });
       this.socket.on("setState", (state) => (this.state = state));
       this.socket.on("updateScores", (playerList) => (this.playerList = playerList));
-      this.socket.on("gameStarted", (playerList,finishOrder) => {
-				this.state = 1;
-				this.playerList = playerList;
-				this.finishOrder = finishOrder
-			});
+      this.socket.on("gameStarted", (playerList, finishOrder) => {
+        this.state = 1;
+        this.playerList = playerList;
+        this.finishOrder = finishOrder;
+      });
       this.socket.on("gameEnded", () => (this.state = 2));
       this.socket.on("playerFinished", (finishOrder) => (this.finishOrder = finishOrder));
     },
     get finished() {
       return this.playerList[this.id]?.finished;
+    },
+    get numPlayers(){
+      return Object.values(this.playerList).length
     },
     submitName() {
       if (this.playerName.trim() !== "") {
@@ -30,6 +36,5 @@ function clickerGame() {
         this.socket.emit("newPlayer", this.playerName);
       }
     },
-  
   };
 }
