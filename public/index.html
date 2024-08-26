@@ -19,42 +19,40 @@
 <body x-data="clickerGame()">
 
   <section class="name-entry" x-show="!hasName">
-    <label>Who are you?<input type="text" autofocus @keydown.enter="submitName" x-model="playerName"></label>
-    <button :class="playerName && 'ready'" @click="submitName">Join</button>
+    <label>
+      <h1>Who are you?</h1><input type="text" autofocus @keydown.enter="submitName" x-model="playerName">
+    </label>
+    <button :disabled="!playerName" @click="submitName">Join</button>
   </section>
 
   <section class="game" x-show="hasName">
-    <h2>Welcome, <span x-text="playerName"></span>!</h2>
+    <h1 x-show="state == 0">Everyone in?</h1>
+    <h1 x-show="state == 1" x-text="countdownTime > 1 ? countdownTime : '1'"></h1>
+    <h1 x-show="state == 3">Done!</h1>
+    <button class="game__start-button" @click="socket.emit('startCountdown')" x-show="state == 0">Start Game</button>
+    <button class="game__click-button" @click="socket.emit('click')" x-show="state == 2" :disabled="player && player.finished" x-text="player && player.count">Click</button>
+  </section>
 
-    <button id="startGameButton" @click="socket.emit('startGame')" x-show="state == 0">Start Game</button>
-    <button id="clickButton" @click="socket.emit('click')" x-show="state != 0" :disabled="state !=1 || finished">Click Me!</button>
-
-    <div id="scores">
-      <template x-for="(player, id) in playerList" :key="id">
-        <p x-text="`${player.name}: ${player.count}`"></p>
+  <section class="status">
+    <div class="status__lobby">
+      <p x-text="`${players.length} Player${players.length == 1 ? '' : 's'}`"></p>
+      <template x-for="player in players">
+        <span x-text="player.name"></span>
       </template>
     </div>
 
-    <div x-show="finishOrder.length > 0">
-      <h3>Finish Order:</h3>
-      <ul>
-        <template x-for="(player,index) in finishOrder" :key="index">
-          <li>
-            <span x-text="index+1"></span>
-            <span x-text="player"></span>
-          </li>
-        </template>
-      </ul>
+    <div class="status__game" x-show="state == 3">
+      <template x-for="(name,index) in finishOrder">
+        <div class="status__player">
+          <span class="status__player__rank" x-text="index+1"></span>
+          <span class="status__player__name" x-text="name"></span>
+        </div>
+      </template>
     </div>
-    <button id="startGameButton" @click="socket.emit('startGame')" x-show="state == 2">Start New Round</button>
   </section>
-  <section class="present">
-    <p x-text ="`${numPlayers} Player${numPlayers == 1 ? '' : 's'}`"></p>
-    <template x-for="player in Object.values(playerList)">
-      <span x-text="player.name"></span>
-      
 
-    </template>
+  <section class="menu">
+    <button class="small" @click="socket.emit('resetGame')" x-show="state == 3">back</button>
   </section>
 
 
