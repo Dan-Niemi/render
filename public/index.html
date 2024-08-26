@@ -4,43 +4,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multiplayer Clicker Game</title>
-
+  <title>Clicker</title>
   <script src="/socket.io/socket.io.js"></script>
   <script defer src="index.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="index.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One" rel="stylesheet">
 </head>
 
 <body x-data="clickerGame()">
 
   <section class="name-entry" x-show="!hasName">
     <label>
-      <h1>Who are you?</h1><input type="text" autofocus @keydown.enter="submitName" x-model="playerName">
+      <h1>Who are you?</h1>
+      <input type="text" autofocus @keydown.enter="submitName" x-model="playerName">
     </label>
-    <button :disabled="!playerName" @click="submitName">Join</button>
+    <button :disabled="playerName.trim() === ''" @click="submitName">Join</button>
   </section>
 
   <section class="game" x-show="hasName">
     <h1 x-show="state == 0">Everyone in?</h1>
     <h1 x-show="state == 1" x-text="countdownTime > 1 ? countdownTime : '1'"></h1>
-    <h1 x-show="state == 3">Done!</h1>
+    <h1 x-show="state == 3 || (state == 2 && player.time)" x-text="(player.time/1000).toFixed(2)+'s'"></h1>
+    <h2 x-show="state == 3 || (state == 2 && player.time)" x-text="`You're number ${playersSorted.indexOf(player) + 1}`"></h2>
     <button class="game__start-button" @click="socket.emit('startCountdown')" x-show="state == 0">Start Game</button>
-    <button class="game__click-button" @click="socket.emit('click')" x-show="state == 2" :disabled="player && player.finished" x-text="player && player.count">Click</button>
+    <button class="game__click-button" @click="socket.emit('click')" x-show="state == 2 && !player.time" x-text="player && player.count">Click</button>
   </section>
 
   <section class="status">
-    <div class="status__lobby" x-sort x-sort:config="{ animation: 300 }">
+    <p>Players</p>
+    <div class="status__lobby">
       <template x-for="(player,index) in playersSorted" :key="player.name">
-        <div x-sort:player class="status__player">
-          <span x-text="index"></span>
+        <div player class="status__player">
           <span x-text="player.name"></span>
-          <span x-text="player.time || player.count"></span>
+          <span x-text="player.time ? (player.time/1000).toFixed(2)+'s' : player.count"></span>
         </div>
       </template>
     </div>
@@ -50,7 +49,5 @@
     <button class="small" @click="socket.emit('resetGame')" x-show="state == 3">back</button>
   </section>
 
-
 </body>
-
 </html>

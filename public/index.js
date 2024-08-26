@@ -13,10 +13,7 @@ function clickerGame() {
     init() {
       this.time = Date.now()
       this.socket = io();
-      this.socket.on("newConnection", (id, playerList) => {
-        this.id = id;
-        this.playerList = playerList;
-      });
+      this.socket.on("newConnection", (id) => {this.id = id;});
       this.socket.on("stateUpdated", (state) => (this.state = state));
       this.socket.on("playerListUpdated", (playerList) => (this.playerList = playerList));
       this.socket.on("countdownStarted", (dur) => this.startTime = Date.now() + dur )
@@ -44,6 +41,7 @@ function clickerGame() {
     submitName() {
       if (this.playerName.trim() !== "") {
         this.hasName = true;
+        this.playerName = this.playerName.trim();
         this.socket.emit("newPlayer", this.playerName);
       }
     },

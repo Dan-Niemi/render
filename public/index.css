@@ -26,14 +26,19 @@ button:not(:disabled):hover { color: white; background-color: black; }
 .name-entry label { display: flex; align-items: center; flex-direction: column; } 
 .name-entry input { padding: 1rem; font-size: 5rem; background-color: transparent; outline: none; text-align: center; border:none; border-bottom: 1rem solid hsla(0, 0%, 0%, .1); } 
 
-.status {position: absolute;bottom: 0;left: 0;width: 100%;padding: 1rem;}
-.status__lobby { display: flex; gap: 1rem; } 
+.game__click-button {
+	min-width: 8ch;
+}
+
+.status {position: absolute;bottom: 0;left: 0;padding: 1rem;}
+.status__lobby { display: flex; flex-direction: column; gap: .25rem; } 
 .status__player {
 	display: flex;
-	gap: .5rem;
+	gap: 2rem;
 	padding-inline: 1rem;
 	background-color: hsla(0, 0%, 0%, .1);
 	transition: all ease-in-out 300ms;
+	justify-content: space-between;
 }
 
 .menu {
