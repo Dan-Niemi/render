@@ -6,7 +6,6 @@ function clickerGame() {
     hasName: false,
     playerList: {},
     state: 0, //0,1,2 for pre, during, and post game
-    finishOrder: [],
     startTime: null,
     time:null,
     
@@ -20,7 +19,6 @@ function clickerGame() {
       });
       this.socket.on("stateUpdated", (state) => (this.state = state));
       this.socket.on("playerListUpdated", (playerList) => (this.playerList = playerList));
-      this.socket.on("finishOrderUpdated",(finishOrder)=> this.finishOrder = finishOrder )
       this.socket.on("countdownStarted", (dur) => this.startTime = Date.now() + dur )
       setInterval(()=>{
         this.time = Date.now()
@@ -31,6 +29,10 @@ function clickerGame() {
     },
     get players(){
       return Object.values(this.playerList)
+    },
+    get playersSorted(){
+      let tempArr = Object.values(this.playerList).slice();
+      return tempArr.sort((a,b) => (a.time || 99999999) - (b.time || 99999999) != 0 ? (a.time || 99999999) - (b.time || 99999999) : b.count - a.count )
     },
     get countdownTime(){
       if(this.startTime){

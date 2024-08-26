@@ -11,7 +11,6 @@ const io = socketIo(server);
 let playerList = {};
 let standings = [];
 let state = 0; //0,1,2,3 for pre, countdown, during, and post game
-let finishOrder = [];
 let startTime = null;
 const CLICK_GOAL = 5;
 const COUNTDOWN_DURATION = 5000; //in ms
@@ -34,9 +33,8 @@ io.on("connection", (socket) => {
     Object.values(playerList).forEach((obj) => {
       obj.count = 0;
       obj.finished = false;
+      obj.time = null
     });
-    finishOrder = [];
-    io.emit("finishOrderUpdated", finishOrder);
     io.emit("playerListUpdated", playerList);
   });
 
@@ -60,8 +58,6 @@ io.on("connection", (socket) => {
       if (p.count >= CLICK_GOAL) {
         p.finished = true;
         p.time = Date.now() - startTime;
-        finishOrder.push(p.name);
-        io.emit("finishOrderUpdated", finishOrder);
       }
       io.emit("playerListUpdated", playerList);
       checkEnd();
@@ -72,6 +68,9 @@ io.on("connection", (socket) => {
     delete playerList[socket.id];
     io.emit("playerListUpdated", playerList);
     checkEnd();
+    if (!Object.keys(playerList).length) {
+      state = 0;
+    }
   });
 
   function checkEnd() {

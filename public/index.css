@@ -28,11 +28,13 @@ button:not(:disabled):hover { color: white; background-color: black; }
 
 .status {position: absolute;bottom: 0;left: 0;width: 100%;padding: 1rem;}
 .status__lobby { display: flex; gap: 1rem; } 
-.status__lobby span { display: flex; align-items: center; justify-content: center; padding-inline: 1rem; background-color: hsla(0, 0%, 0%, .1); } 
-.status__game { } 
-.status__player {display: flex; } 
-.status__player__rank {color: white; background-color: black; } 
-.status__player__name {background-color: hsla(0, 0%, 0%, .1);} 
+.status__player {
+	display: flex;
+	gap: .5rem;
+	padding-inline: 1rem;
+	background-color: hsla(0, 0%, 0%, .1);
+	transition: all ease-in-out 300ms;
+}
 
 .menu {
 	position: absolute;

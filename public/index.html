@@ -8,6 +8,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script defer src="index.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="index.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,18 +35,12 @@
   </section>
 
   <section class="status">
-    <div class="status__lobby">
-      <p x-text="`${players.length} Player${players.length == 1 ? '' : 's'}`"></p>
-      <template x-for="player in players">
-        <span x-text="player.name"></span>
-      </template>
-    </div>
-
-    <div class="status__game" x-show="state == 3">
-      <template x-for="(name,index) in finishOrder">
-        <div class="status__player">
-          <span class="status__player__rank" x-text="index+1"></span>
-          <span class="status__player__name" x-text="name"></span>
+    <div class="status__lobby" x-sort x-sort:config="{ animation: 300 }">
+      <template x-for="(player,index) in playersSorted" :key="player.name">
+        <div x-sort:player class="status__player">
+          <span x-text="index"></span>
+          <span x-text="player.name"></span>
+          <span x-text="player.time || player.count"></span>
         </div>
       </template>
     </div>
