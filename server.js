@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-let playerList = {};
+let playerList = new Map();
 let state = 0; //0,1,2,3 for pre, countdown, during, and post game
 let startTime = null;
 const CLICK_GOAL = 50;
@@ -14,22 +14,22 @@ const COUNTDOWN_DURATION = 5000; //in ms
 
 io.on("connection", (socket) => {
   socket.emit("newConnection", socket.id);
-  socket.emit("playerListUpdated", playerList);
+  socket.emit("playerListUpdated", Object.fromEntries(playerList));
   socket.emit("stateUpdated", state);
 
   socket.on("newPlayer", (name) => {
-    playerList[socket.id] = { name: name, count: 0, time: null };
-    io.emit("playerListUpdated", playerList);
+    playerList.set(socket.id, { name: name, count: 0, time: null });
+    io.emit("playerListUpdated", Object.fromEntries(playerList));
   });
 
   socket.on("resetGame", () => {
     state = 0;
     io.emit("stateUpdated", state);
-    Object.values(playerList).forEach((obj) => {
-      obj.count = 0;
-      obj.time = null;
+    playerList.forEach((player) => {
+      player.count = 0;
+      player.time = null;
     });
-    io.emit("playerListUpdated", playerList);
+    io.emit("playerListUpdated", Object.fromEntries(playerList));
   });
 
   socket.on("startCountdown", () => {
@@ -44,27 +44,29 @@ io.on("connection", (socket) => {
   });
 
   socket.on("click", () => {
-    let p = playerList[socket.id]
-    p.count++;
-
-    if (p.count >= CLICK_GOAL) {
-      p.time = Date.now() - startTime;
+    let p = playerList.get(socket.id);
+    if (p) {
+      p.count++;
+      if (p.count >= CLICK_GOAL) {
+        p.time = Date.now() - startTime;
+      }
+      io.emit("playerListUpdated", Object.fromEntries(playerList));
+      checkEnd();
     }
-    io.emit("playerListUpdated", playerList);
-    checkEnd();
   });
 
   socket.on("disconnect", () => {
-    delete playerList[socket.id];
-    io.emit("playerListUpdated", playerList);
+    playerList.delete(socket.id);
+    io.emit("playerListUpdated", Object.fromEntries(playerList));
     checkEnd();
-    if (!Object.keys(playerList).length) {
+    console.log(playerList.size)
+    if (playerList.size === 0) {
       state = 0;
     }
   });
 
   function checkEnd() {
-    if (Object.values(playerList).every((obj) => obj.count >= CLICK_GOAL)) {
+    if (Array.from(playerList.values()).every((obj) => obj.count >= CLICK_GOAL)) {
       state = 3;
       io.emit("stateUpdated", state);
     }
