@@ -6,7 +6,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-
 let playerList = {};
 let state = 0; //0,1,2,3 for pre, countdown, during, and post game
 let startTime = null;
@@ -15,7 +14,7 @@ const COUNTDOWN_DURATION = 5000; //in ms
 
 io.on("connection", (socket) => {
   socket.emit("newConnection", socket.id);
-  socket.emit("playerListUpdated",playerList)
+  socket.emit("playerListUpdated", playerList);
   socket.emit("stateUpdated", state);
 
   socket.on("newPlayer", (name) => {
@@ -28,7 +27,7 @@ io.on("connection", (socket) => {
     io.emit("stateUpdated", state);
     Object.values(playerList).forEach((obj) => {
       obj.count = 0;
-      obj.time = null
+      obj.time = null;
     });
     io.emit("playerListUpdated", playerList);
   });
@@ -45,17 +44,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("click", () => {
-    
-    if (playerList[socket.id] && state == 2) {
-      let p = playerList[socket.id];
-      p.count++;
+    let p = playerList[socket.id]
+    p.count++;
 
-      if (p.count >= CLICK_GOAL) {
-        p.time = Date.now() - startTime;
-      }
-      io.emit("playerListUpdated", playerList);
-      checkEnd();
+    if (p.count >= CLICK_GOAL) {
+      p.time = Date.now() - startTime;
     }
+    io.emit("playerListUpdated", playerList);
+    checkEnd();
   });
 
   socket.on("disconnect", () => {

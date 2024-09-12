@@ -25,11 +25,18 @@
   </section>
 
   <section class="game" x-show="hasName">
-    <h1 x-show="state == 0">Everyone in?</h1>
+    <div x-show="isLeader">
+      <p x-show="state == 0">You're the party leader</p>
+      <h1 x-show="state == 0">Everyone in?</h1>
+      <button x-show="state == 0" class="game__start-button" @click="socket.emit('startCountdown')" >Start Game</button>
+    </div>
+    <div x-show="!isLeader">
+      <h1 x-show="state == 0" x-text="`${playerName} is Ready!`"></h1>
+      <p x-show="state == 0">Waiting on party leader to begin.</p>
+    </div>
     <h1 x-show="state == 1" x-text="countdownTime > 1 ? countdownTime : '1'"></h1>
     <h1 x-show="state == 3 || (state == 2 && player.time)" x-text="(player.time/1000).toFixed(2)+'s'"></h1>
     <h2 x-show="state == 3 || (state == 2 && player.time)" x-text="`You're number ${playersSorted.indexOf(player) + 1}`"></h2>
-    <button class="game__start-button" @click="socket.emit('startCountdown')" x-show="state == 0">Start Game</button>
     <button class="game__click-button" @click="socket.emit('click')" x-show="state == 2 && !player.time" x-text="player && player.count">Click</button>
   </section>
 
