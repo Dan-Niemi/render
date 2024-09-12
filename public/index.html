@@ -35,8 +35,10 @@
       <p x-show="state == 0">Waiting on party leader to begin.</p>
     </div>
     <h1 x-show="state == 1" x-text="countdownTime > 1 ? countdownTime : '1'"></h1>
-    <h1 x-show="state == 3 || (state == 2 && player.time)" x-text="(player.time/1000).toFixed(2)+'s'"></h1>
-    <h2 x-show="state == 3 || (state == 2 && player.time)" x-text="`You're number ${playersSorted.indexOf(player) + 1}`"></h2>
+    <div x-show="player && player.time">
+      <h1 x-text="player && ((player.time/1000).toFixed(2)+'s')"></h1>
+      <h2 x-text="`You're number ${playersSorted.indexOf(player) + 1}`"></h2>
+    </div>
     <button class="game__click-button" @click="socket.emit('click')" x-show="state == 2 && !player.time" x-text="player && player.count">Click</button>
   </section>
 
